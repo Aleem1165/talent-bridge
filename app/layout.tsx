@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import QueryModal from "@/components/QueryModal";
+import PostJobModal from "@/components/PostJobModal";
+import { PostJobModalProvider } from "@/context/PostJobModalContext";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -31,9 +34,13 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
     >
       <body className="min-h-full flex flex-col bg-[#050b18] text-white selection:bg-blue-600 selection:text-white">
-        <Navbar />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <PostJobModalProvider>
+          <Navbar />
+          <main className="flex-1">{children}</main>
+          <Footer />
+          <QueryModal />
+          <PostJobModal />
+        </PostJobModalProvider>
       </body>
     </html>
   );

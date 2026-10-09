@@ -1,6 +1,11 @@
+"use client";
+
 import React from "react";
+import { usePostJobModal } from "@/context/PostJobModalContext";
 
 export default function CtaBanner() {
+  const { openPostJobModal } = usePostJobModal();
+
   return (
     <section className="py-12 relative" id="employers">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -22,6 +27,7 @@ export default function CtaBanner() {
             <div className="shrink-0 w-full lg:w-auto">
               <button
                 type="button"
+                onClick={openPostJobModal}
                 className="w-full lg:w-auto inline-flex items-center justify-center px-6 py-2.5 sm:px-7 sm:py-3.5 rounded-xl bg-[#070e1c] hover:bg-[#13223f] text-white text-sm font-semibold transition-colors duration-200 shadow-xl cursor-pointer"
               >
                 Post a Job

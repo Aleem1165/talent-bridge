@@ -2,8 +2,11 @@
 
 import React from "react";
 import { Mail, Phone, MapPin } from "lucide-react";
+import { usePostJobModal } from "@/context/PostJobModalContext";
 
 export default function Footer() {
+  const { openPostJobModal } = usePostJobModal();
+
   const handleScrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -78,7 +81,7 @@ export default function Footer() {
               <li>
                 <button
                   type="button"
-                  onClick={() => handleScrollTo("employers", 90)}
+                  onClick={openPostJobModal}
                   className="hover:text-white transition-colors cursor-pointer text-left"
                 >
                   Post a Job

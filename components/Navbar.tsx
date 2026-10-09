@@ -2,8 +2,10 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { Menu, X } from "lucide-react";
+import { usePostJobModal } from "@/context/PostJobModalContext";
 
 export default function Navbar() {
+  const { openPostJobModal } = usePostJobModal();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const toggleButtonRef = useRef<HTMLButtonElement>(null);
@@ -125,6 +127,7 @@ export default function Navbar() {
           </button>
           <button
             type="button"
+            onClick={openPostJobModal}
             className="inline-flex items-center justify-center px-2 min-[580px]:px-2.5 md:px-3.5 lg:px-4 xl:px-5 py-1 min-[580px]:py-1.5 sm:py-2 xl:py-2.5 rounded-lg min-[580px]:rounded-xl text-[10px] min-[580px]:text-[11px] md:text-xs lg:text-sm font-semibold text-white bg-[#1d68f2] hover:bg-[#1656cc] transition-colors duration-200 cursor-pointer whitespace-nowrap"
           >
             Post a Job
@@ -135,58 +138,78 @@ export default function Navbar() {
         <button
           ref={toggleButtonRef}
           type="button"
-          aria-label="Toggle menu"
+          aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="min-[500px]:hidden p-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/60 transition cursor-pointer"
+          className="min-[500px]:hidden relative w-10 h-10 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/60 transition-colors flex items-center justify-center cursor-pointer overflow-hidden"
         >
-          {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          <Menu
+            className={`w-6 h-6 absolute transition-all duration-300 ease-in-out ${
+              mobileMenuOpen
+                ? "opacity-0 rotate-90 scale-75 pointer-events-none"
+                : "opacity-100 rotate-0 scale-100 pointer-events-auto"
+            }`}
+          />
+          <X
+            className={`w-6 h-6 absolute transition-all duration-300 ease-in-out ${
+              mobileMenuOpen
+                ? "opacity-100 rotate-0 scale-100 pointer-events-auto"
+                : "opacity-0 -rotate-90 scale-75 pointer-events-none"
+            }`}
+          />
         </button>
       </div>
 
       {/* Backdrop overlay for outside click / touch */}
-      {mobileMenuOpen && (
-        <div
-          onClick={() => setMobileMenuOpen(false)}
-          className="fixed inset-0 top-20 bg-black/60 backdrop-blur-xs z-40 min-[500px]:hidden cursor-pointer"
-        />
-      )}
+      <div
+        onClick={() => setMobileMenuOpen(false)}
+        aria-hidden={!mobileMenuOpen}
+        className={`fixed inset-0 top-20 bg-black/60 backdrop-blur-xs z-40 min-[500px]:hidden cursor-pointer transition-opacity duration-300 ease-in-out ${
+          mobileMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        }`}
+      />
 
       {/* Mobile/Tablet Menu Dropdown */}
-      {mobileMenuOpen && (
-        <div
-          ref={menuRef}
-          className="min-[500px]:hidden absolute top-full left-0 right-0 w-full border-b border-slate-800 bg-[#050b18]/98 backdrop-blur-xl shadow-2xl z-50"
-        >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3 pb-6 space-y-3">
-            {navLinks.map((link) => (
-              <button
-                key={link.label}
-                type="button"
-                onClick={() => handleScrollTo(link.targetId, link.offset)}
-                className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:text-white hover:bg-slate-800/50 cursor-pointer"
-              >
-                {link.label}
-              </button>
-            ))}
-            <div className="pt-4 border-t border-slate-800 flex flex-col min-[360px]:flex-row min-[360px]:items-center min-[360px]:justify-start gap-3">
-              <button
-                type="button"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full min-[360px]:w-auto min-[360px]:min-w-[130px] px-6 text-center py-2.5 rounded-xl text-sm font-medium text-white border border-slate-700/90 hover:border-slate-500 bg-[#0c1629]/50 transition cursor-pointer whitespace-nowrap"
-              >
-                Sign In
-              </button>
-              <button
-                type="button"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full min-[360px]:w-auto min-[360px]:min-w-[130px] px-6 text-center py-2.5 rounded-xl text-sm font-semibold bg-[#1d68f2] hover:bg-[#1656cc] text-white transition-colors duration-200 cursor-pointer whitespace-nowrap"
-              >
-                Post a Job
-              </button>
-            </div>
+      <div
+        ref={menuRef}
+        aria-hidden={!mobileMenuOpen}
+        className={`min-[500px]:hidden absolute top-full left-0 right-0 w-full border-b border-slate-800 bg-[#050b18]/98 backdrop-blur-xl shadow-2xl z-50 transition-all duration-300 ease-in-out origin-top transform ${
+          mobileMenuOpen
+            ? "opacity-100 translate-y-0 pointer-events-auto visible"
+            : "opacity-0 -translate-y-4 pointer-events-none invisible"
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3 pb-6 space-y-3">
+          {navLinks.map((link) => (
+            <button
+              key={link.label}
+              type="button"
+              onClick={() => handleScrollTo(link.targetId, link.offset)}
+              className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:text-white hover:bg-slate-800/50 cursor-pointer transition-colors duration-150"
+            >
+              {link.label}
+            </button>
+          ))}
+          <div className="pt-4 border-t border-slate-800 flex flex-col min-[360px]:flex-row min-[360px]:items-center min-[360px]:justify-center gap-3">
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(false)}
+              className="w-full min-[360px]:w-auto min-[360px]:min-w-[130px] px-6 text-center py-2.5 rounded-xl text-sm font-medium text-white border border-slate-700/90 hover:border-slate-500 bg-[#0c1629]/50 transition cursor-pointer whitespace-nowrap"
+            >
+              Sign In
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                openPostJobModal();
+              }}
+              className="w-full min-[360px]:w-auto min-[360px]:min-w-[130px] px-6 text-center py-2.5 rounded-xl text-sm font-semibold bg-[#1d68f2] hover:bg-[#1656cc] text-white transition-colors duration-200 cursor-pointer whitespace-nowrap"
+            >
+              Post a Job
+            </button>
           </div>
         </div>
-      )}
+      </div>
     </header>
   );
 }
